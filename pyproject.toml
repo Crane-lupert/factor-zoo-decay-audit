@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Project Factor — Chen-Zimmermann 300 factor replication + post-publication decay + capacity-adjusted survival"
 requires-python = ">=3.11"
 dependencies = [
-    "openassetpricing>=0.6",
+    "openassetpricing>=0.0.2",
     "pandas>=2.2",
     "polars>=1.0",
     "numpy>=1.26",

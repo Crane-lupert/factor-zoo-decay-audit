@@ -17,13 +17,14 @@ htmlcov/
 .env.*
 !.env.example
 
-# Data artifacts (produced at runtime, not for git)
-data/
-results/
+# Data artifacts produced at runtime; checked-in subset below for dashboard
 outputs/
-cache/
-*.parquet
 *.feather
+
+# Cache: keep lean (LS + signal doc) for Streamlit Cloud deploy.
+# Exclude full op_returns parquet (22MB; only needed by Day-6 leg decomposition,
+# whose output is itself committed under results/day6/leg_decay.parquet).
+cache/oap_op_returns.parquet
 
 # Jupyter
 .ipynb_checkpoints/
