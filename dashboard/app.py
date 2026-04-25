@@ -276,6 +276,10 @@ research; positioning is reproducible public artifact.
     for tab, (col, title) in zip(tabs, crit_specs):
         with tab:
             sub = surv_df[surv_df["criterion"] == col]
+            # Dynamic Y-axis: pad ~15% above the per-criterion max so the visual
+            # uses the full chart height regardless of strictness level.
+            y_max_pct = float(sub["viable_pct"].max() * 100) if len(sub) else 100.0
+            y_top = max(5.0, y_max_pct * 1.15)
             fig = go.Figure()
             for mech in ["ALL", "behavioral", "mispricing", "risk_premium"]:
                 ms = sub[sub["mechanism"] == mech].sort_values("aum_usd")
@@ -290,7 +294,7 @@ research; positioning is reproducible public artifact.
                                   "%{customdata[0]}/%{customdata[1]} factors<extra></extra>",
                 ))
             fig.update_layout(
-                title=title, height=360, yaxis_range=[0, 100],
+                title=title, height=360, yaxis_range=[0, y_top],
                 xaxis={"categoryorder": "array", "categoryarray": AUM_ORDER},
                 xaxis_title="AUM", yaxis_title="Viable factors (%)",
                 margin={"t": 50, "b": 30, "l": 30, "r": 30},
