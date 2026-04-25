@@ -1,0 +1,9 @@
+Day-2 mechanism classification report
+=====================================
+factors classified : 212
+models             : 3
+avg pairwise kappa : 0.607
+unanimous          : 134/212
+oracle kappa       : 0.850    (gate >0.70: PASS)
+oracle raw agreement: 90.0%
+total cost         : $0.3212

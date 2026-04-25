@@ -1,0 +1,21 @@
+Acronym,oracle_label,oracle_rationale,acronym,ensemble_label,votes_for,total_votes,match
+Mom6m,behavioral,Jegadeesh-Titman 1993; classic underreaction / disposition / slow info diffusion -- behavioral by canonical reading.,Mom6m,behavioral,3,3,True
+Mom12m,behavioral,Same JT family at 12m horizon; investor underreaction story.,Mom12m,behavioral,3,3,True
+IndMom,behavioral,Grinblatt-Moskowitz 1999 industry momentum; investor inattention to industry-level info.,IndMom,behavioral,3,3,True
+STreversal,behavioral,Jegadeesh 1990 short-term reversal; overreaction at <=1 month -- behavioral.,STreversal,behavioral,3,3,True
+LRreversal,behavioral,DeBondt-Thaler 1985 long-run reversal; classical overreaction story.,LRreversal,behavioral,3,3,True
+BM,risk_premium,Stattman 1980 value premium; Fama-French canonical interpretation as compensation for distress risk.,BM,risk_premium,3,3,True
+AnalystValue,mispricing,Frankel-Lee 1998 V/P; intrinsic-value mispricing exploited via analyst forecasts -- mispricing.,AnalystValue,mispricing,2,3,True
+Investment,risk_premium,Titman-Wei-Xie 2004 capex; q-theory rationalizes as risk-based discount-rate mechanism.,Investment,mispricing,2,3,False
+AssetGrowth,risk_premium,Cooper-Gulen-Schill 2008; modern q-theory interpretation as investment risk premium.,AssetGrowth,risk_premium,3,3,True
+Accruals,mispricing,Sloan 1996; canonical limits-to-arbitrage mispricing -- accrual persistence misjudged.,Accruals,mispricing,3,3,True
+AbnormalAccruals,mispricing,Xie 2001 residual accruals; Sloan extension -- mispricing of discretionary component.,AbnormalAccruals,mispricing,3,3,True
+BetaFP,risk_premium,Frazzini-Pedersen 2014 BAB; leverage-constraint mechanism producing risk-priced low-beta premium.,BetaFP,risk_premium,3,3,True
+IdioVol3F,mispricing,Ang-Hodrick-Xing-Zhang 2006 idio vol puzzle; widely attributed to limits-to-arbitrage on hard-to-arb stocks.,IdioVol3F,risk_premium,2,3,False
+PS,mispricing,Piotroski 2000 F-score; fundamental signal not arbitraged among value stocks -- mispricing.,PS,mispricing,3,3,True
+EarningsSurprise,behavioral,Foster-Olsen-Shevlin 1984 PEAD; canonical underreaction to earnings news.,EarningsSurprise,behavioral,3,3,True
+NetEquityFinance,mispricing,Bradshaw-Richardson-Sloan 2006; issuance signals overvaluation; LTA prevents arbitrage.,NetEquityFinance,mispricing,3,3,True
+ShareIss5Y,mispricing,Daniel-Titman 2006 long-horizon issuance; mispricing-driven managerial timing.,ShareIss5Y,mispricing,3,3,True
+Size,risk_premium,Banz 1981; canonical Fama-French interpretation as distress-risk premium.,Size,risk_premium,3,3,True
+GP,risk_premium,Novy-Marx 2013 gross profitability; expected-profitability discount-rate mechanism.,GP,risk_premium,3,3,True
+MaxRet,behavioral,Bali-Cakici-Whitelaw 2011 lottery preferences; investor preference for skewness -- behavioral.,MaxRet,behavioral,3,3,True
