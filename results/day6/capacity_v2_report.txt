@@ -1,0 +1,14 @@
+Capacity v2 (per-factor turnover + tier ADV + sqrt impact + borrow)
+===================================================================
+mechanism  ALL  behavioral  mispricing  risk_premium
+$100M       13           2           7             4
+$1B          9           2           3             4
+$10B         4           0           3             1
+$100B        1           0           1             0
+
+Viable %:
+mechanism  ALL  behavioral  mispricing  risk_premium
+$100M      6.2         3.5         8.5           5.8
+$1B        4.3         3.5         3.7           5.8
+$10B       1.9         0.0         3.7           1.4
+$100B      0.5         0.0         1.2           0.0

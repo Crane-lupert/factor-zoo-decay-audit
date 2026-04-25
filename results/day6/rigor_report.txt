@@ -1,0 +1,9 @@
+FDR (BH alpha=0.05) and bootstrap rigor
+========================================
+naive p<0.05  : 63/210 (30.0%)
+BH-FDR q<0.05 : 36/210 (17.1%)
+
+   group_a      group_b  n_a  n_b  observed_diff  boot_ci_lo  boot_ci_hi  boot_p_two_sided
+behavioral   mispricing   57   82        -0.2613     -0.4283     -0.1025            0.0026
+behavioral risk_premium   57   69        -0.2544     -0.4172     -0.1028            0.0028
+mispricing risk_premium   82   69         0.0070     -0.1123      0.1277            0.9036

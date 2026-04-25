@@ -1,0 +1,11 @@
+Deflated Sharpe Ratio (Bailey-Lopez de Prado 2014)
+==================================================
+n_trials: 212    sigma_SR_cross (monthly): 0.1038
+Expected max annualized Sharpe: 1.001
+DSR > 0.95: 23/212
+
+By mechanism:
+ensemble_label  n  mean_dsr  median_dsr  frac_robust
+    behavioral 57     0.362       0.110        0.211
+    mispricing 85     0.239       0.089        0.071
+  risk_premium 70     0.203       0.007        0.071

@@ -1,0 +1,332 @@
+Acronym,Filter,Cat.Economic,cap_tier,monthly_turnover_per_side,universe_daily_volume_usd,half_spread_bps,borrow_cost_bps_yr
+AbnormalAccruals,,accruals,full_universe,0.08,50000000000.0,15,300
+Accruals,abs(prc)>5,accruals,ex_microcap,0.08,40000000000.0,10,150
+AccrualsBM,,valuation,full_universe,0.04,50000000000.0,15,300
+Activism1,,other,full_universe,0.1,50000000000.0,15,300
+AM,,valuation,full_universe,0.04,50000000000.0,15,300
+AnalystRevision,,earnings forecast,full_universe,0.1,50000000000.0,15,300
+AnnouncementReturn,,earnings event,full_universe,0.1,50000000000.0,15,300
+AssetGrowth,,investment,full_universe,0.06,50000000000.0,15,300
+BetaLiquidityPS,abs(prc)>5,liquidity,ex_microcap,0.2,40000000000.0,10,150
+BetaTailRisk,abs(prc)>5,risk,ex_microcap,0.1,40000000000.0,10,150
+betaVIX,,volatility,full_universe,0.15,50000000000.0,15,300
+BM,"exchcd%in%c(1,2)",valuation,full_universe,0.04,50000000000.0,15,300
+BMdec,,valuation,full_universe,0.04,50000000000.0,15,300
+BookLeverage,,leverage,full_universe,0.05,50000000000.0,15,300
+BPEBM,abs(prc)>5,leverage,ex_microcap,0.05,40000000000.0,10,150
+Cash,,asset composition,full_universe,0.06,50000000000.0,15,300
+CashProd,,profitability alt,full_universe,0.03,50000000000.0,15,300
+CBOperProf,,profitability,full_universe,0.03,50000000000.0,15,300
+CF,"exchcd%in%c(1,2)",valuation,full_universe,0.04,50000000000.0,15,300
+cfp,,valuation,full_universe,0.04,50000000000.0,15,300
+ChangeInRecommendation,,recommendation,full_universe,0.1,50000000000.0,15,300
+ChAssetTurnover,abs(prc)>5,sales growth,ex_microcap,0.08,40000000000.0,10,150
+ChEQ,,investment,full_universe,0.06,50000000000.0,15,300
+ChForecastAccrual,,earnings forecast,full_universe,0.1,50000000000.0,15,300
+ChInv,,investment alt,full_universe,0.06,50000000000.0,15,300
+ChInvIA,,investment growth,full_universe,0.1,50000000000.0,15,300
+ChNAnalyst,abs(prc) > 5,earnings event,ex_microcap,0.1,40000000000.0,10,150
+ChNNCOA,,investment alt,full_universe,0.06,50000000000.0,15,300
+ChNWC,abs(prc)>5,investment alt,ex_microcap,0.06,40000000000.0,10,150
+ChTax,,other,full_universe,0.1,50000000000.0,15,300
+CitationsRD,,profitability alt,full_universe,0.03,50000000000.0,15,300
+CompEquIss,abs(prc)>5,external financing,ex_microcap,0.06,40000000000.0,10,150
+CompositeDebtIssuance,,external financing,full_universe,0.06,50000000000.0,15,300
+ConvDebt,,external financing,full_universe,0.06,50000000000.0,15,300
+CoskewACX,"shrcd<=11, exchcd==1",risk,full_universe,0.1,50000000000.0,15,300
+CPVolSpread,"shrcd%in%c(10,11)",optionrisk,full_universe,0.2,50000000000.0,15,300
+dVolCall,,informed trading,full_universe,0.1,50000000000.0,15,300
+dVolPut,,informed trading,full_universe,0.1,50000000000.0,15,300
+dCPVolSpread,,informed trading,full_universe,0.1,50000000000.0,15,300
+CredRatDG,,other,full_universe,0.1,50000000000.0,15,300
+CustomerMomentum,abs(prc)>5,lead lag,ex_microcap,0.25,40000000000.0,10,150
+DelBreadth,,ownership,full_universe,0.1,50000000000.0,15,300
+DelCOA,,investment alt,full_universe,0.06,50000000000.0,15,300
+DelCOL,,external financing,full_universe,0.06,50000000000.0,15,300
+DelEqu,,investment,full_universe,0.06,50000000000.0,15,300
+DelFINL,,external financing,full_universe,0.06,50000000000.0,15,300
+DelLTI,,investment,full_universe,0.06,50000000000.0,15,300
+DelNetFin,,investment alt,full_universe,0.06,50000000000.0,15,300
+DivInit,shrcd <= 11,payout indicator,full_universe,0.04,50000000000.0,15,300
+DivOmit,shrcd <= 11,payout indicator,full_universe,0.04,50000000000.0,15,300
+DivSeason,abs(prc)>5,payout indicator,ex_microcap,0.04,40000000000.0,10,150
+DivYieldST,,valuation,full_universe,0.04,50000000000.0,15,300
+dNoa,,investment,full_universe,0.06,50000000000.0,15,300
+DolVol,,volume,full_universe,0.2,50000000000.0,15,300
+EarningsConsistency,abs(prc)>1,earnings growth,ex_microcap,0.1,40000000000.0,10,150
+EarningsForecastDisparity,,earnings forecast,full_universe,0.1,50000000000.0,15,300
+EarningsStreak,abs(prc)>5,earnings growth,ex_microcap,0.1,40000000000.0,10,150
+EarningsSurprise,abs(prc)>5,earnings growth,ex_microcap,0.1,40000000000.0,10,150
+EarnSupBig,,lead lag,full_universe,0.25,50000000000.0,15,300
+EBM,abs(prc)>5,valuation,ex_microcap,0.04,40000000000.0,10,150
+EntMult,,valuation,full_universe,0.04,50000000000.0,15,300
+EP,exchcd==1,valuation,full_universe,0.04,50000000000.0,15,300
+EquityDuration,,valuation,full_universe,0.04,50000000000.0,15,300
+ExchSwitch,,other,full_universe,0.1,50000000000.0,15,300
+ExclExp,,composite accounting,full_universe,0.05,50000000000.0,15,300
+FEPS,abs(prc)>5,profitability,ex_microcap,0.03,40000000000.0,10,150
+fgr5yrLag,,earnings forecast,full_universe,0.1,50000000000.0,15,300
+FirmAgeMom,,momentum,full_universe,0.3,50000000000.0,15,300
+ForecastDispersion,,volatility,full_universe,0.15,50000000000.0,15,300
+Frontier,"exchcd%in%c(1,2,3),shrcd<=11",valuation,full_universe,0.04,50000000000.0,15,300
+Governance,,other,full_universe,0.1,50000000000.0,15,300
+GP,,profitability,full_universe,0.03,50000000000.0,15,300
+GrAdExp,abs(prc)>5,investment alt,ex_microcap,0.06,40000000000.0,10,150
+grcapx,,investment growth,full_universe,0.1,50000000000.0,15,300
+grcapx3y,,investment growth,full_universe,0.1,50000000000.0,15,300
+Herf,,other,full_universe,0.1,50000000000.0,15,300
+HerfBE,,other,full_universe,0.1,50000000000.0,15,300
+hire,,investment alt,full_universe,0.06,50000000000.0,15,300
+IdioVol3F,,volatility,full_universe,0.15,50000000000.0,15,300
+IdioVolAHT,,volatility,full_universe,0.15,50000000000.0,15,300
+Illiquidity,"abs(prc)>5, exchcd==1",liquidity,ex_microcap,0.2,40000000000.0,10,150
+IndIPO,,external financing,full_universe,0.06,50000000000.0,15,300
+IndMom,,momentum,full_universe,0.3,50000000000.0,15,300
+IndRetBig,,lead lag,full_universe,0.25,50000000000.0,15,300
+IntanBM,abs(prc)>5,long term reversal,ex_microcap,0.1,40000000000.0,10,150
+IntanCFP,abs(prc)>5,long term reversal,ex_microcap,0.1,40000000000.0,10,150
+IntanEP,abs(prc)>5,long term reversal,ex_microcap,0.1,40000000000.0,10,150
+IntanSP,,long term reversal,full_universe,0.1,50000000000.0,15,300
+IntMom,,momentum,full_universe,0.3,50000000000.0,15,300
+Investment,,investment,full_universe,0.06,50000000000.0,15,300
+InvestPPEInv,,investment,full_universe,0.06,50000000000.0,15,300
+InvGrowth,,profitability,full_universe,0.03,50000000000.0,15,300
+iomom_cust,,lead lag,full_universe,0.25,50000000000.0,15,300
+iomom_supp,,lead lag,full_universe,0.25,50000000000.0,15,300
+Leverage,,leverage,full_universe,0.05,50000000000.0,15,300
+LRreversal,,long term reversal,full_universe,0.1,50000000000.0,15,300
+MaxRet,,volatility,full_universe,0.15,50000000000.0,15,300
+MeanRankRevGrowth,"exchcd%in%c(1,2)",sales growth,full_universe,0.08,50000000000.0,15,300
+Mom12m,,momentum,full_universe,0.3,50000000000.0,15,300
+Mom12mOffSeason,"exchcd%in%c(1,2)",other,full_universe,0.1,50000000000.0,15,300
+Mom6m,,momentum,full_universe,0.3,50000000000.0,15,300
+Mom6mJunk,"abs(prc)>5, me>me_nyse20",momentum,ex_microcap,0.3,40000000000.0,10,150
+MomOffSeason,"exchcd%in%c(1,2)",other,full_universe,0.1,50000000000.0,15,300
+MomOffSeason06YrPlus,"exchcd%in%c(1,2)",other,full_universe,0.1,50000000000.0,15,300
+MomOffSeason16YrPlus,"exchcd%in%c(1,2)",other,full_universe,0.1,50000000000.0,15,300
+MomRev,,momentum,full_universe,0.3,50000000000.0,15,300
+MomSeason,"exchcd%in%c(1,2)",other,full_universe,0.1,50000000000.0,15,300
+MomSeason06YrPlus,"exchcd%in%c(1,2)",other,full_universe,0.1,50000000000.0,15,300
+MomSeason11YrPlus,"exchcd%in%c(1,2)",other,full_universe,0.1,50000000000.0,15,300
+MomSeason16YrPlus,"exchcd%in%c(1,2)",other,full_universe,0.1,50000000000.0,15,300
+MomSeasonShort,"exchcd%in%c(1,2)",other,full_universe,0.1,50000000000.0,15,300
+MomVol,"abs(prc)>1, exchcd %in% c(1,2)",momentum,ex_microcap,0.3,40000000000.0,10,150
+MS,,composite accounting,full_universe,0.05,50000000000.0,15,300
+NetDebtFinance,,external financing,full_universe,0.06,50000000000.0,15,300
+NetDebtPrice,,leverage,full_universe,0.05,50000000000.0,15,300
+NetEquityFinance,,external financing,full_universe,0.06,50000000000.0,15,300
+NetPayoutYield,,valuation,full_universe,0.04,50000000000.0,15,300
+NOA,,asset composition,full_universe,0.06,50000000000.0,15,300
+OPLeverage,,other,full_universe,0.1,50000000000.0,15,300
+OptionVolume1,"abs(prc)>1, shrcd<=11",volume,ex_microcap,0.2,40000000000.0,10,150
+OrderBacklog,,sales growth,full_universe,0.08,50000000000.0,15,300
+OrderBacklogChg,,accruals,full_universe,0.08,50000000000.0,15,300
+OrgCap,,R&D,full_universe,0.04,50000000000.0,15,300
+OScore,abs(prc)>5,default risk,ex_microcap,0.1,40000000000.0,10,150
+PatentsRD,,profitability alt,full_universe,0.03,50000000000.0,15,300
+PayoutYield,,valuation,full_universe,0.04,50000000000.0,15,300
+PctAcc,abs(prc)>5,accruals,ex_microcap,0.08,40000000000.0,10,150
+PctTotAcc,,accruals,full_universe,0.08,50000000000.0,15,300
+Price,,other,full_universe,0.1,50000000000.0,15,300
+PriceDelayRsq,,lead lag,full_universe,0.25,50000000000.0,15,300
+PS,,composite accounting,full_universe,0.05,50000000000.0,15,300
+RD,,R&D,full_universe,0.04,50000000000.0,15,300
+RDAbility,abs(prc)>5,other,ex_microcap,0.1,40000000000.0,10,150
+RDcap,,asset composition,full_universe,0.06,50000000000.0,15,300
+RDIPO,,R&D,full_universe,0.04,50000000000.0,15,300
+RDS,,composite accounting,full_universe,0.05,50000000000.0,15,300
+RealizedVol,,volatility,full_universe,0.15,50000000000.0,15,300
+Recomm_ShortInterest,,recommendation,full_universe,0.1,50000000000.0,15,300
+ResidualMomentum,abs(prc)>1,momentum,ex_microcap,0.3,40000000000.0,10,150
+retConglomerate,abs(prc)>5,lead lag,ex_microcap,0.25,40000000000.0,10,150
+ReturnSkew,,risk,full_universe,0.1,50000000000.0,15,300
+ReturnSkew3F,,risk,full_universe,0.1,50000000000.0,15,300
+REV6,,earnings forecast,full_universe,0.1,50000000000.0,15,300
+RevenueSurprise,,sales growth,full_universe,0.08,50000000000.0,15,300
+RIO_Disp,,short sale constraints,full_universe,0.1,50000000000.0,15,300
+RIO_MB,,short sale constraints,full_universe,0.1,50000000000.0,15,300
+RIO_Turnover,,short sale constraints,full_universe,0.1,50000000000.0,15,300
+RIO_Volatility,,short sale constraints,full_universe,0.1,50000000000.0,15,300
+RIVolSpread,"shrcd%in%c(10,11)",optionrisk,full_universe,0.2,50000000000.0,15,300
+roaq,abs(prc)>1,profitability,ex_microcap,0.03,40000000000.0,10,150
+sfe,abs(prc)>1,valuation,ex_microcap,0.04,40000000000.0,10,150
+ShareIss1Y,,external financing,full_universe,0.06,50000000000.0,15,300
+ShareIss5Y,,external financing,full_universe,0.06,50000000000.0,15,300
+ShareVol,exchcd==1,volume,full_universe,0.2,50000000000.0,15,300
+Size,,size,full_universe,0.04,50000000000.0,15,300
+SmileSlope,,optionrisk,full_universe,0.2,50000000000.0,15,300
+std_turn,exchcd==1,liquidity,full_universe,0.2,50000000000.0,15,300
+STreversal,,short-term reversal,full_universe,0.45,50000000000.0,15,300
+SurpriseRD,,R&D,full_universe,0.04,50000000000.0,15,300
+tang,,asset composition,full_universe,0.06,50000000000.0,15,300
+Tax,abs(prc)>5,other,ex_microcap,0.1,40000000000.0,10,150
+TotalAccruals,,investment alt,full_universe,0.06,50000000000.0,15,300
+TrendFactor,,momentum,full_universe,0.3,50000000000.0,15,300
+VolSD,exchcd==1,liquidity,full_universe,0.2,50000000000.0,15,300
+XFIN,,external financing,full_universe,0.06,50000000000.0,15,300
+zerotrade6M,exchcd==1,liquidity,full_universe,0.2,50000000000.0,15,300
+zerotrade1M,exchcd==1,liquidity,full_universe,0.2,50000000000.0,15,300
+zerotrade12M,exchcd==1,liquidity,full_universe,0.2,50000000000.0,15,300
+Activism2,,ownership,full_universe,0.1,50000000000.0,15,300
+AdExp,,R&D,full_universe,0.04,50000000000.0,15,300
+AgeIPO,,other,full_universe,0.1,50000000000.0,15,300
+AnalystValue,abs(prc) > 1,valuation,ex_microcap,0.04,40000000000.0,10,150
+AOP,abs(prc) > 1,other,ex_microcap,0.1,40000000000.0,10,150
+Beta,,risk,full_universe,0.1,50000000000.0,15,300
+BetaFP,,other,full_universe,0.1,50000000000.0,15,300
+BidAskSpread,,liquidity,full_universe,0.2,50000000000.0,15,300
+BrandInvest,,investment alt,full_universe,0.06,50000000000.0,15,300
+ConsRecomm,,recommendation,full_universe,0.1,50000000000.0,15,300
+Coskewness,shrcd<=11,risk,full_universe,0.1,50000000000.0,15,300
+DebtIssuance,,external financing,full_universe,0.06,50000000000.0,15,300
+DelDRC,,investment alt,full_universe,0.06,50000000000.0,15,300
+DownRecomm,,earnings forecast,full_universe,0.1,50000000000.0,15,300
+FirmAge,exchcd==1,info proxy,full_universe,0.1,50000000000.0,15,300
+FR,,composite accounting,full_universe,0.05,50000000000.0,15,300
+GrLTNOA,abs(prc)>5,investment,ex_microcap,0.06,40000000000.0,10,150
+GrSaleToGrInv,,sales growth,full_universe,0.08,50000000000.0,15,300
+GrSaleToGrOverhead,,sales growth,full_universe,0.08,50000000000.0,15,300
+HerfAsset,,other,full_universe,0.1,50000000000.0,15,300
+High52,,momentum,full_universe,0.3,50000000000.0,15,300
+IO_ShortInterest,exchcd==1,ownership,full_universe,0.1,50000000000.0,15,300
+MomOffSeason11YrPlus,"exchcd%in%c(1,2)",other,full_universe,0.1,50000000000.0,15,300
+MRreversal,,long term reversal,full_universe,0.1,50000000000.0,15,300
+NumEarnIncrease,abs(prc)>5,earnings growth,ex_microcap,0.1,40000000000.0,10,150
+OperProf,,profitability,full_universe,0.03,50000000000.0,15,300
+OperProfRD,,profitability,full_universe,0.03,50000000000.0,15,300
+OptionVolume2,"abs(prc)>1, shrcd<=11",volume,ex_microcap,0.2,40000000000.0,10,150
+PredictedFE,abs(prc) > 1,earnings forecast,ex_microcap,0.1,40000000000.0,10,150
+PriceDelaySlope,,lead lag,full_universe,0.25,50000000000.0,15,300
+PriceDelayTstat,,lead lag,full_universe,0.25,50000000000.0,15,300
+ProbInformedTrading,,liquidity,full_universe,0.2,50000000000.0,15,300
+realestate,,asset composition,full_universe,0.06,50000000000.0,15,300
+RoE,abs(prc)>5,profitability,ex_microcap,0.03,40000000000.0,10,150
+ShareRepurchase,,payout indicator,full_universe,0.04,50000000000.0,15,300
+ShortInterest,,short sale constraints,full_universe,0.1,50000000000.0,15,300
+sinAlgo,,other,full_universe,0.1,50000000000.0,15,300
+skew1,,optionrisk,full_universe,0.2,50000000000.0,15,300
+SP,,valuation,full_universe,0.04,50000000000.0,15,300
+Spinoff,,other,full_universe,0.1,50000000000.0,15,300
+UpRecomm,,earnings forecast,full_universe,0.1,50000000000.0,15,300
+VarCF,,cash flow risk,full_universe,0.1,50000000000.0,15,300
+VolMkt,abs(prc)>5,volume,ex_microcap,0.2,40000000000.0,10,150
+VolumeTrend,,volume,full_universe,0.2,50000000000.0,15,300
+BetaBDLeverage,me > me_nyse10,liquidity,full_universe,0.2,50000000000.0,15,300
+BetaSquared,,other,full_universe,0.1,50000000000.0,15,300
+BidAskTAQ,,liquidity,full_universe,0.2,50000000000.0,15,300
+DelayAcct,,lead lag,full_universe,0.25,50000000000.0,15,300
+DelayNonAcct,,lead lag,full_universe,0.25,50000000000.0,15,300
+DelSTI,,investment alt,full_universe,0.06,50000000000.0,15,300
+DownsideBeta,exchcd==1,risk,full_universe,0.1,50000000000.0,15,300
+FailureProbability,abs(prc)>1,default risk,ex_microcap,0.1,40000000000.0,10,150
+ForecastDispersionLT,,volatility,full_universe,0.15,50000000000.0,15,300
+KZ,,composite accounting,full_universe,0.05,50000000000.0,15,300
+rd_sale,,investment alt,full_universe,0.06,50000000000.0,15,300
+roic,,profitability,full_universe,0.03,50000000000.0,15,300
+WW,,external financing,full_universe,0.06,50000000000.0,15,300
+ZScore,exchcd==1,default risk,full_universe,0.1,50000000000.0,15,300
+ConsNegRet,,momentum,full_universe,0.3,50000000000.0,15,300
+ConsPosRet,,momentum,full_universe,0.3,50000000000.0,15,300
+invest,,investment,full_universe,0.06,50000000000.0,15,300
+PosNegCons,,momentum,full_universe,0.3,50000000000.0,15,300
+sinOrig,,other,full_universe,0.1,50000000000.0,15,300
+AbnormalAccrualsPercent,,accruals,full_universe,0.08,50000000000.0,15,300
+AccrualQuality,,accruals,full_universe,0.08,50000000000.0,15,300
+AccrualQualityJune,,accruals,full_universe,0.08,50000000000.0,15,300
+AMq,,valuation,full_universe,0.04,50000000000.0,15,300
+AssetGrowth_q,,investment,full_universe,0.06,50000000000.0,15,300
+AssetLiquidityBook,,asset composition,full_universe,0.06,50000000000.0,15,300
+AssetLiquidityBookQuart,,asset composition,full_universe,0.06,50000000000.0,15,300
+AssetLiquidityMarket,,asset composition,full_universe,0.06,50000000000.0,15,300
+AssetLiquidityMarketQuart,,asset composition,full_universe,0.06,50000000000.0,15,300
+AssetTurnover,abs(prc)>5,composite accounting,ex_microcap,0.05,40000000000.0,10,150
+AssetTurnover_q,,composite accounting,full_universe,0.05,50000000000.0,15,300
+betaCC,,liquidity,full_universe,0.2,50000000000.0,15,300
+betaCR,,liquidity,full_universe,0.2,50000000000.0,15,300
+BetaDimson,,market risk,full_universe,0.1,50000000000.0,15,300
+betaNet,,liquidity,full_universe,0.2,50000000000.0,15,300
+betaRC,,liquidity,full_universe,0.2,50000000000.0,15,300
+betaRR,,liquidity,full_universe,0.2,50000000000.0,15,300
+BMq,,valuation,full_universe,0.04,50000000000.0,15,300
+BookLeverageQuarterly,,leverage,full_universe,0.05,50000000000.0,15,300
+BrandCapital,,investment alt,full_universe,0.06,50000000000.0,15,300
+CapTurnover,exchcd==1,turnover,full_universe,0.1,50000000000.0,15,300
+CapTurnover_q,,turnover,full_universe,0.1,50000000000.0,15,300
+cashdebt,,profitability alt,full_universe,0.03,50000000000.0,15,300
+CBOperProfLagAT,,profitability,full_universe,0.03,50000000000.0,15,300
+CBOperProfLagAT_q,,profitability,full_universe,0.03,50000000000.0,15,300
+cfpq,,valuation,full_universe,0.04,50000000000.0,15,300
+CFq,,valuation,full_universe,0.04,50000000000.0,15,300
+ChangeRoA,,composite accounting,full_universe,0.05,50000000000.0,15,300
+ChangeRoE,,composite accounting,full_universe,0.05,50000000000.0,15,300
+ChNCOA,,investment,full_universe,0.06,50000000000.0,15,300
+ChNCOL,,investment alt,full_universe,0.06,50000000000.0,15,300
+ChPM,abs(prc)>5,sales growth,ex_microcap,0.08,40000000000.0,10,150
+currat,,asset composition,full_universe,0.06,50000000000.0,15,300
+depr,,other,full_universe,0.1,50000000000.0,15,300
+DivYield,"abs(prc)>2, exchcd%in%c(1)",valuation,ex_microcap,0.04,40000000000.0,10,150
+DivYieldAnn,,valuation,full_universe,0.04,50000000000.0,15,300
+EarningsConservatism,,other,full_universe,0.1,50000000000.0,15,300
+EarningsPersistence,,other,full_universe,0.1,50000000000.0,15,300
+EarningsPredictability,,other,full_universe,0.1,50000000000.0,15,300
+EarningsSmoothness,,other,full_universe,0.1,50000000000.0,15,300
+EarningsTimeliness,,other,full_universe,0.1,50000000000.0,15,300
+EarningsValueRelevance,,other,full_universe,0.1,50000000000.0,15,300
+EBM_q,,valuation,full_universe,0.04,50000000000.0,15,300
+EntMult_q,,valuation,full_universe,0.04,50000000000.0,15,300
+EPq,,valuation,full_universe,0.04,50000000000.0,15,300
+ETR,,other,full_universe,0.1,50000000000.0,15,300
+FailureProbabilityJune,,default risk,full_universe,0.1,50000000000.0,15,300
+fgr5yrNoLag,,earnings forecast,full_universe,0.1,50000000000.0,15,300
+FRbook,,composite accounting,full_universe,0.05,50000000000.0,15,300
+GPlag,,profitability,full_universe,0.03,50000000000.0,15,300
+GPlag_q,,profitability,full_universe,0.03,50000000000.0,15,300
+grcapx1y,,investment,full_universe,0.06,50000000000.0,15,300
+GrGMToGrSales,,earnings growth,full_universe,0.1,50000000000.0,15,300
+GrSaleToGrReceivables,,profitability alt,full_universe,0.03,50000000000.0,15,300
+IdioVolCAPM,,volatility,full_universe,0.15,50000000000.0,15,300
+IdioVolQF,,volatility,full_universe,0.15,50000000000.0,15,300
+IntrinsicValue,,valuation,full_universe,0.04,50000000000.0,15,300
+KZ_q,,composite accounting,full_universe,0.05,50000000000.0,15,300
+LaborforceEfficiency,,profitability alt,full_universe,0.03,50000000000.0,15,300
+Leverage_q,,leverage,full_universe,0.05,50000000000.0,15,300
+nanalyst,,info proxy,full_universe,0.1,50000000000.0,15,300
+NetDebtPrice_q,,leverage,full_universe,0.05,50000000000.0,15,300
+NetPayoutYield_q,,valuation,full_universe,0.04,50000000000.0,15,300
+OperProfLag,,profitability,full_universe,0.03,50000000000.0,15,300
+OperProfLag_q,,profitability,full_universe,0.03,50000000000.0,15,300
+OperProfRDLagAT,,profitability,full_universe,0.03,50000000000.0,15,300
+OperProfRDLagAT_q,,profitability,full_universe,0.03,50000000000.0,15,300
+OPLeverage_q,,other,full_universe,0.1,50000000000.0,15,300
+OrgCapNoAdj,,R&D,full_universe,0.04,50000000000.0,15,300
+OScore_q,,default risk,full_universe,0.1,50000000000.0,15,300
+PayoutYield_q,,valuation,full_universe,0.04,50000000000.0,15,300
+pchcurrat,,investment alt,full_universe,0.06,50000000000.0,15,300
+pchdepr,,investment alt,full_universe,0.06,50000000000.0,15,300
+pchgm_pchsale,,profitability alt,full_universe,0.03,50000000000.0,15,300
+pchquick,,investment alt,full_universe,0.06,50000000000.0,15,300
+pchsaleinv,,profitability alt,full_universe,0.03,50000000000.0,15,300
+PM,abs(prc)>5,profitability,ex_microcap,0.03,40000000000.0,10,150
+PM_q,,profitability,full_universe,0.03,50000000000.0,15,300
+PS_q,,composite accounting,full_universe,0.05,50000000000.0,15,300
+quick,,asset composition,full_universe,0.06,50000000000.0,15,300
+RD_q,,R&D,full_universe,0.04,50000000000.0,15,300
+rd_sale_q,,R&D,full_universe,0.04,50000000000.0,15,300
+ResidualMomentum6m,,momentum,full_universe,0.3,50000000000.0,15,300
+RetNOA,abs(prc)>5,composite accounting,ex_microcap,0.05,40000000000.0,10,150
+RetNOA_q,,composite accounting,full_universe,0.05,50000000000.0,15,300
+ReturnSkewCAPM,,risk,full_universe,0.1,50000000000.0,15,300
+ReturnSkewQF,,risk,full_universe,0.1,50000000000.0,15,300
+roavol,,cash flow risk,full_universe,0.1,50000000000.0,15,300
+salecash,,profitability alt,full_universe,0.03,50000000000.0,15,300
+saleinv,,profitability alt,full_universe,0.03,50000000000.0,15,300
+salerec,,profitability alt,full_universe,0.03,50000000000.0,15,300
+secured,,external financing,full_universe,0.06,50000000000.0,15,300
+securedind,,external financing,full_universe,0.06,50000000000.0,15,300
+sgr,,sales growth,full_universe,0.08,50000000000.0,15,300
+sgr_q,,sales growth,full_universe,0.08,50000000000.0,15,300
+SP_q,,valuation,full_universe,0.04,50000000000.0,15,300
+tang_q,,asset composition,full_universe,0.06,50000000000.0,15,300
+Tax_q,,other,full_universe,0.1,50000000000.0,15,300
+WW_Q,,external financing,full_universe,0.06,50000000000.0,15,300
+ZScore_q,,default risk,full_universe,0.1,50000000000.0,15,300

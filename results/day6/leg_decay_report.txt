@@ -1,0 +1,6 @@
+Leg-level decay summary
+=======================
+   mechanism  n  mean_long_post_sharpe  mean_short_post_sharpe  mean_long_decay_diff  mean_short_decay_diff  mean_ls_decay_diff  mean_short_minus_long_decay
+  behavioral 57                  0.534                  -0.461                -0.225                  0.117              -0.334                        0.341
+  mispricing 82                  0.446                  -0.452                -0.203                  0.204               0.024                        0.407
+risk_premium 69                  0.529                  -0.498                -0.145                  0.180               0.103                        0.325
