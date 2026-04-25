@@ -1,6 +1,11 @@
 # factor-zoo-decay-audit
 
-**Scope**: 5-7 days (extended) | **Status**: Day 6 complete + dashboard MVP | **Positioning**: factor literature 유창성 배지 + capacity overlay (NOT original research)
+[![Live demo](https://img.shields.io/badge/Streamlit-live%20demo-2563eb?logo=streamlit&logoColor=white)](https://factor-zoo-decay-audit-260426ah.streamlit.app) &nbsp; [![GitHub](https://img.shields.io/badge/GitHub-Crane--lupert%2Ffactor--zoo--decay--audit-181717?logo=github)](https://github.com/Crane-lupert/factor-zoo-decay-audit)
+
+**Live dashboard**: <https://factor-zoo-decay-audit-260426ah.streamlit.app>
+**Repository**: <https://github.com/Crane-lupert/factor-zoo-decay-audit>
+
+**Scope**: 5-7 days (extended) | **Status**: Day 6 complete + dashboard MVP deployed | **Positioning**: factor literature 유창성 배지 + capacity overlay (NOT original research)
 
 ## What this is
 
