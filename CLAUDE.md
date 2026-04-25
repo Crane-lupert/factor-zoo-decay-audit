@@ -15,10 +15,11 @@ Chen-Zimmermann Open Asset Pricing library 의 ~300 공개 factor 를 재현 + p
 
 ## Dependencies
 
-- Chen-Zimmermann: `pip install openassetpricing` (직접 설치, 외부 repo 의존 없음)
-- Ken French Data Library: CSV download (MiroSalmon adapter 재사용)
-- SEC 데이터: 거의 안 씀 (fundamental factor 소수에만)
+- Chen-Zimmermann: `openassetpricing` Python 패키지 (직접 설치)
+- Ken French Data Library: `pandas-datareader` 또는 CSV download
+- SEC 데이터: 거의 안 씀 (fundamental factor 소수에만) — 필요시 `shared_utils.sec_client`
 - OpenRouter: `OpenRouterClient(project="F")`, project cap=4 (LLM 사용 매우 적음)
+- 상세 조율 규칙: `D:/vscode/portfolio-coordination/CLAUDE.md`
 
 ---
 
@@ -26,10 +27,12 @@ Chen-Zimmermann Open Asset Pricing library 의 ~300 공개 factor 를 재현 + p
 
 ### Day 1 — 로드 + baseline 재현
 작업:
-- Repo 초기화 + `pip install openassetpricing shared-utils`
-- 300 signal + portfolio returns 일괄 로드
+- 환경 셋업 (`uv venv`, `uv pip install -e .`, `uv pip install -e D:/vscode/portfolio-coordination/shared-utils`)
+- `openassetpricing` 작동 확인 (`python -c "from openassetpricing import OpenAP; print(OpenAP().list_signals()[:3])"`)
+- 300 signal + portfolio returns 일괄 로드, parquet 캐시 저장
 - IS / OOS / post-publication Sharpe 계산 (사전 규정: in-sample=paper sample period, post-pub = paper publication date 이후)
 - Chen-Zimmermann 이 reported 한 Sharpe 와 본 계산 일치 확인 (오차 < 5%)
+- 저녁 체크포인트 작성
 
 **Advance Gate (Day 1 EOD)**:
 - 300 factor 로드 성공
