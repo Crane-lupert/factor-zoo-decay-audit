@@ -71,6 +71,33 @@ uv pip install -e D:/vscode/portfolio-coordination/shared-utils
 - Borrow cost on short leg is parametric (50/150/300 bps/yr by tier), not from Markit short-interest data.
 - US CRSP only (no international).
 
+## Public deployment (Streamlit Community Cloud)
+
+Repo is structured to deploy unchanged to [share.streamlit.io](https://share.streamlit.io):
+
+1. **Create GitHub remote** (one-time, user action):
+   ```bash
+   gh repo create factor-zoo-decay-audit --public --source . --push
+   # or set an existing remote:
+   git remote add origin https://github.com/<USER>/factor-zoo-decay-audit.git
+   git push -u origin main
+   ```
+
+2. **Connect Streamlit Cloud**:
+   - Sign in with GitHub at [share.streamlit.io](https://share.streamlit.io)
+   - "New app" → pick the repo, branch=`main`, `dashboard/app.py`
+   - Python 3.11, `requirements.txt` is auto-detected
+   - First build ~2 min; subsequent pushes auto-redeploy
+
+3. **What's checked in for the cloud runtime**:
+   - `cache/oap_signal_doc.parquet` (94 KB)
+   - `cache/oap_ls_returns.parquet` (1.8 MB)
+   - All `results/day*/*.parquet` (~1 MB)
+   - Excluded: `cache/oap_op_returns.parquet` (22 MB; only used by Day-6 leg
+     decomposition, whose result is already cached as `leg_decay.parquet`).
+
+Total deployed footprint < 5 MB; well under GitHub free-tier per-file limit.
+
 ## Repository layout
 
 ```
