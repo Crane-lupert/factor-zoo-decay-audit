@@ -64,6 +64,58 @@ def fmt_aum(a: float) -> str:
 AUM_ORDER = ["$100M", "$1B", "$10B", "$100B"]
 
 
+@st.cache_data(show_spinner=False)
+def _compute_multi_criterion_survival(d_repr: dict[str, pd.DataFrame] | None = None) -> pd.DataFrame:
+    """Per-(AUM, mechanism) survival counts under 3 capacity-haircut criteria.
+
+    crit_a : long-horizon capacity_sharpe >= 0.30
+    crit_b : capacity-adjusted annual Sharpe positive in majority of post-pub years
+    crit_c : capacity-adjusted annual Sharpe >= 0.30 in majority of post-pub years
+
+    Annual capacity-adjusted Sharpe = annual_sharpe_gross - sharpe_haircut(AUM, factor),
+    where the haircut is the long-horizon (annualized) value -- a conservative
+    approximation that matches the v2 cost model used in capacity_adjusted_v2.parquet.
+    """
+    base = REPO_ROOT
+    cap = pd.read_parquet(base / "results" / "day6" / "capacity_adjusted_v2.parquet")
+    cap = cap[cap["analysis_eligible"]]
+    wf = pd.read_parquet(base / "results" / "day3" / "walk_forward_sharpes.parquet")
+    decay = pd.read_parquet(base / "results" / "day3" / "decay_per_factor.parquet")
+
+    wf_post = wf[wf["years_since_pub"] > 0][["Acronym", "year", "sharpe_ann"]]
+
+    rows: list[dict] = []
+    for aum, sub in cap.groupby("aum_usd", sort=True):
+        merged = wf_post.merge(
+            sub[["Acronym", "mechanism", "sharpe_haircut", "capacity_sharpe"]],
+            on="Acronym", how="inner",
+        )
+        merged["annual_net"] = merged["sharpe_ann"] - merged["sharpe_haircut"]
+        per_factor = merged.groupby(["Acronym", "mechanism"]).agg(
+            cap_sharpe=("capacity_sharpe", "first"),
+            frac_pos=("annual_net", lambda s: (s > 0).mean()),
+            frac_03=("annual_net", lambda s: (s >= 0.30).mean()),
+        ).reset_index()
+        per_factor["crit_a"] = per_factor["cap_sharpe"] >= 0.30
+        per_factor["crit_b"] = per_factor["frac_pos"] >= 0.50
+        per_factor["crit_c"] = per_factor["frac_03"] >= 0.50
+
+        for mech, g in per_factor.groupby("mechanism"):
+            for col in ("crit_a", "crit_b", "crit_c"):
+                rows.append({
+                    "aum_usd": aum, "mechanism": mech, "criterion": col,
+                    "n_total": int(len(g)), "n_viable": int(g[col].sum()),
+                    "viable_pct": float(g[col].mean()),
+                })
+        for col in ("crit_a", "crit_b", "crit_c"):
+            rows.append({
+                "aum_usd": aum, "mechanism": "ALL", "criterion": col,
+                "n_total": int(len(per_factor)), "n_viable": int(per_factor[col].sum()),
+                "viable_pct": float(per_factor[col].mean()),
+            })
+    return pd.DataFrame(rows)
+
+
 # ---------- pages ----------
 
 def page_overview(d: dict[str, pd.DataFrame]) -> None:
@@ -77,32 +129,14 @@ def page_overview(d: dict[str, pd.DataFrame]) -> None:
     with st.expander("What is this dashboard? (read first)", expanded=False):
         st.markdown(
             """
-**Factor zoo** — a "factor" is a published rule for ranking stocks
-(e.g., "buy 12-month winners, short losers" — momentum). Since the 1990s
-academic finance has produced 200+ such factors, often called the "factor
-zoo." The crucial question for any practitioner is: *which of these are
-real, replicable, robust to costs, and still working today?*
-
-**This dashboard** integrates four standard layers of evaluation for the
-212 factors with portfolio data in the **Chen-Zimmermann Open Asset
-Pricing** library:
-
-1. **Reproduction**: are the in-sample numbers the same as published?
-   (sign agreement 98.7%, t-stat ratio 1.003)
-2. **Decay**: does the alpha survive after the paper was published?
-   *Engelberg-McLean-Pontiff (2024)* showed behavioral factors fade more
-   than risk-premium factors -- we reproduce this directional finding
-   (Welch p = 0.003) and also report it COMPRESSES to insignificance
-   (p = 0.45) in the 2020-2024 cohort.
-3. **Capacity**: how much alpha survives after realistic trading costs
-   at $100M / $1B / $10B / $100B AUM, including borrow cost on the short
-   leg? (Frazzini-Israel-Moskowitz / Novy-Marx-Velikov calibrated.)
-4. **Multiple-testing rigor**: which factors clear the *Deflated Sharpe
-   Ratio* (Bailey-Lopez de Prado 2014) under N=212 trials?
-
-**Honest positioning**: research novelty was published by EMP-2024;
-this artifact is a *public, reproducible, capacity-aware integration*
-of the standard literature -- not original research.
+Reproduction + decay + capacity + multi-test rigor for the 212 factors with
+portfolio data in the **Chen-Zimmermann Open Asset Pricing** library.
+Reproduces the EMP-2024 mechanism-conditional decay direction (Welch
+p=0.003 on the full post-pub window) and reports the gap COMPRESSES to
+insignificance (p=0.45) in 2020-2024 OOS. Capacity model is FIM-2018 /
+NMV-2016 calibrated (per-factor turnover, cap-tier ADV, sqrt-linear
+hybrid impact, tier-conditional borrow on the short leg). Not original
+research; positioning is reproducible public artifact.
 """
         )
 
@@ -122,27 +156,7 @@ of the standard literature -- not original research.
               f"{int((cap_100m['capacity_sharpe'] >= 0.30).sum())}/{cap_100m['Acronym'].nunique()}",
               help="Capacity-adjusted Sharpe >= 0.30 with HF-grade v2 cost model (per-factor turnover + tier ADV + sqrt impact + borrow).")
 
-    st.markdown(
-        "**Long-horizon vs rolling viability** -- the headline `Mean post-pub Sharpe` and "
-        "`Viable @ $100M` use the FULL post-pub window (5 to 30+ years). A factor with "
-        "10 strong years and 20 weak ones can show low long-horizon Sharpe while still "
-        "delivering positive Sharpe in most years. The metrics below show the rolling view:"
-    )
     n_elig = len(rolling)
-    long_horizon_viable = (decay["post_sharpe"] >= 0.30).sum()
-    pos_majority = (rolling["frac_positive"] >= 0.50).sum()
-    above_03_majority = (rolling["frac_above_03"] >= 0.50).sum()
-    r1, r2, r3 = st.columns(3)
-    r1.metric("Long-horizon post-pub Sharpe >= 0.30",
-              f"{long_horizon_viable}/{n_elig} ({long_horizon_viable/n_elig:.0%})",
-              help="Single Sharpe over the full post-pub window. This is what 'Mean post-pub Sharpe' summarises.")
-    r2.metric("Annual Sharpe positive in >=50% of post-pub years",
-              f"{pos_majority}/{n_elig} ({pos_majority/n_elig:.0%})",
-              help="Counts a factor as 'still working' if it had positive annual Sharpe in the majority of post-pub calendar years.")
-    r3.metric("Annual Sharpe >=0.30 in >=50% of post-pub years",
-              f"{above_03_majority}/{n_elig} ({above_03_majority/n_elig:.0%})",
-              help="Stricter: majority of post-pub years above the 0.30 viability threshold.")
-
     # New: per-mechanism comparison across the 3 viability criteria
     st.subheader("Rolling viability fraction by mechanism (3 criteria compared)")
     eligible_with_mech = (
@@ -193,13 +207,9 @@ of the standard literature -- not original research.
                           yaxis_range=[0, 100])
     st.plotly_chart(fig_via, use_container_width=True)
     st.caption(
-        "Same 208 eligible factors evaluated under three different viability lenses. "
-        "**Long-horizon** is the strictest (single Sharpe averaged over 5-30+ years); "
-        "**Positive in majority** is the loosest (just count the years with annual "
-        "Sharpe > 0). The 33pp gap (46% vs 79%) is the long-horizon-tail effect "
-        "documented in Methodology / caveats. "
-        "Behavioral factors have the highest IS Sharpe so they show up disproportionately "
-        "in 'Positive in majority' (87%) but fade hardest under long-horizon (49%)."
+        "33pp gap between strictest (long-horizon ≥ 0.30, 46%) and loosest "
+        "(positive-in-majority, 79%) shows the long-horizon tail effect; "
+        "behavioral leads in the loose criteria but fades hardest in long-horizon."
     )
 
     # New: threshold sensitivity curve (true survival curve over Sharpe threshold)
@@ -240,45 +250,52 @@ of the standard literature -- not original research.
     )
     st.plotly_chart(fig_sens, use_container_width=True)
     st.caption(
-        "Each line: fraction of factors that clear the X-axis threshold in MAJORITY "
-        "of their post-pub years, by mechanism. The dashed line at 0.30 is the "
-        "default reported elsewhere in the dashboard. The curves are smooth and "
-        "monotone -- there is no cliff -- which means the headline 'rolling viable %' "
-        "is robust to small changes in threshold choice. Behavioral factors dominate "
-        "at low thresholds (most factors had positive years) but converge to the "
-        "other two by 0.50, indicating their advantage is concentrated in the "
-        "weak-signal regime."
+        "Smooth monotone curves => headline rolling-viability rate is robust to "
+        "small changes in threshold. Behavioral leads at low thresholds, converges "
+        "to the other two by ~0.50."
     )
 
-    st.subheader("Survival curve (capacity-adjusted Sharpe >= 0.30)")
-    sc = (
-        cap.assign(viable=lambda x: x["capacity_sharpe"] >= 0.30)
-        .groupby(["aum_usd", "mechanism"])
-        .agg(n=("Acronym", "count"), n_viable=("viable", "sum"))
-        .reset_index()
+    st.subheader("Survival curves -- viable factors vs AUM under three criteria")
+    st.caption(
+        "Same X-axis (AUM) and Y-axis (% of factors viable) as a classical "
+        "capacity survival curve. Each tab applies a DIFFERENT viability "
+        "criterion to the after-cost (capacity-haircut) Sharpe. All criteria "
+        "use the v2 cost model."
     )
-    sc["aum_label"] = sc["aum_usd"].map(fmt_aum)
-    sc["viable_pct"] = sc["n_viable"] / sc["n"]
-    # Pivot by numeric aum_usd to preserve order, then map labels
-    pivot = (
-        sc.pivot(index="aum_usd", columns="mechanism", values="viable_pct")
-        .sort_index()
-        .reset_index()
-    )
-    pivot["aum_label"] = pivot["aum_usd"].map(fmt_aum)
-    pivot = pivot[["aum_label"] + sorted([c for c in pivot.columns if c not in ("aum_usd", "aum_label")])]
-
-    fig = go.Figure()
-    for mech in [c for c in pivot.columns if c != "aum_label"]:
-        fig.add_trace(go.Scatter(
-            x=pivot["aum_label"], y=(pivot[mech] * 100), mode="lines+markers",
-            name=mech, line={"width": 3},
-        ))
-    fig.update_layout(
-        xaxis_title="AUM scenario", yaxis_title="Viable factors (%)",
-        height=350, margin={"t": 30, "b": 30, "l": 30, "r": 30},
-    )
-    st.plotly_chart(fig, use_container_width=True)
+    surv_df = _compute_multi_criterion_survival(d)
+    tabs = st.tabs([
+        "(A) capacity-adjusted Sharpe ≥ 0.30",
+        "(B) annual Sharpe positive in ≥50% of years",
+        "(C) annual Sharpe ≥ 0.30 in ≥50% of years",
+    ])
+    crit_specs = [
+        ("crit_a", "(A) Long-horizon capacity-adjusted Sharpe ≥ 0.30"),
+        ("crit_b", "(B) Annual capacity-adjusted Sharpe positive in ≥50% of post-pub years"),
+        ("crit_c", "(C) Annual capacity-adjusted Sharpe ≥ 0.30 in ≥50% of post-pub years"),
+    ]
+    for tab, (col, title) in zip(tabs, crit_specs):
+        with tab:
+            sub = surv_df[surv_df["criterion"] == col]
+            fig = go.Figure()
+            for mech in ["ALL", "behavioral", "mispricing", "risk_premium"]:
+                ms = sub[sub["mechanism"] == mech].sort_values("aum_usd")
+                if len(ms) == 0:
+                    continue
+                fig.add_trace(go.Scatter(
+                    x=[fmt_aum(a) for a in ms["aum_usd"]],
+                    y=ms["viable_pct"] * 100, mode="lines+markers",
+                    name=mech, line={"width": 3, "color": color_map_full.get(mech)},
+                    customdata=ms[["n_viable", "n_total"]].values,
+                    hovertemplate=mech + " @ %{x}<br>viable %{y:.1f}%<br>"
+                                  "%{customdata[0]}/%{customdata[1]} factors<extra></extra>",
+                ))
+            fig.update_layout(
+                title=title, height=360, yaxis_range=[0, 100],
+                xaxis={"categoryorder": "array", "categoryarray": AUM_ORDER},
+                xaxis_title="AUM", yaxis_title="Viable factors (%)",
+                margin={"t": 50, "b": 30, "l": 30, "r": 30},
+            )
+            st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Mean decay_diff by mechanism (post - IS, annualized Sharpe)")
     grp = (decay.groupby("mechanism")["decay_diff"]
@@ -287,55 +304,18 @@ of the standard literature -- not original research.
     st.dataframe(grp.style.format({"mean": "{:.3f}", "median": "{:.3f}"}),
                  hide_index=True, use_container_width=True)
     st.caption(
-        "Reading this: decay_diff is `post-pub Sharpe minus IS Sharpe` per "
-        "factor. Negative means the factor lost alpha after publication. "
-        "Behavioral factors (-0.68) decay roughly 1.6x more than mispricing "
-        "or risk-premium factors (-0.42) on average; this is the headline "
-        "EMP-2024 directional finding."
-    )
-
-    # New: Sharpe-over-time trajectory by mechanism
-    st.subheader("Annual Sharpe trajectory by years since publication x mechanism")
-    decade = d["decade"].copy()
-    decade["decade_bin"] = decade["decade_bin"].astype(str)
-    fig_decade = go.Figure()
-    decade_order = ["0-5y", "5-10y", "10-15y", "15-20y", "20-30y", "30+y"]
-    color_map = {"behavioral": "#dc2626", "mispricing": "#2563eb", "risk_premium": "#059669"}
-    for mech in ["behavioral", "mispricing", "risk_premium"]:
-        sub = decade[decade["mechanism"] == mech].set_index("decade_bin").reindex(decade_order).reset_index()
-        fig_decade.add_trace(go.Scatter(
-            x=sub["decade_bin"], y=sub["mean"], mode="lines+markers",
-            name=mech, line={"width": 3, "color": color_map.get(mech)},
-            customdata=sub[["count", "median"]].values,
-            hovertemplate="<b>%{x}</b><br>" + mech +
-                          "<br>mean Sharpe: %{y:.3f}<br>median: %{customdata[1]:.3f}<br>n_obs: %{customdata[0]}<extra></extra>",
-        ))
-    fig_decade.add_hline(y=0.30, line_dash="dot", annotation_text="0.30 threshold")
-    fig_decade.add_hline(y=0, line_dash="dot", line_color="#94a3b8")
-    fig_decade.update_layout(
-        height=360, xaxis_title="Years since publication",
-        yaxis_title="Mean annual Sharpe (across factors x calendar years)",
-        margin={"t": 30, "b": 30, "l": 30, "r": 30},
-    )
-    st.plotly_chart(fig_decade, use_container_width=True)
-    st.caption(
-        "Each point is the mean of (factor x calendar year) annual Sharpes within that "
-        "years-since-pub bin. Post-pub years 0-10 sustain Sharpe ~0.4-0.6 across all "
-        "mechanisms; the 20-30y / 30+y tail drags the long-horizon average down. The "
-        "30+y bin for behavioral / risk-premium is dominated by a few very old papers "
-        "(small sample) so treat with caution."
+        "decay_diff = post-pub minus IS Sharpe. Behavioral (-0.68) decays "
+        "~1.6x more than the other two (-0.42) on the full post-pub window; "
+        "Welch p = 0.003. See Mechanism page for OOS 2020-2024 contrast."
     )
 
 
 def page_per_factor(d: dict[str, pd.DataFrame]) -> None:
     st.title("Per-factor view")
     st.caption(
-        "Pick any of the 208 eligible factors to inspect its full lifecycle: "
-        "in-sample / post-pub / 2020-2024 OOS Sharpe, DSR multi-test penalty, "
-        "long vs short leg behavior, cumulative LS return, 60-month rolling Sharpe, "
-        "and capacity-adjusted Sharpe under both v1 (academic) and v2 (HF-grade) "
-        "cost models. The dashed vertical line marks Pub+1yr -- everything to the "
-        "right of it is post-publication."
+        "Pick a factor for full lifecycle: IS / post-pub / OOS Sharpe, DSR, "
+        "long vs short leg, cumulative LS, 60m rolling Sharpe, v1 vs v2 capacity. "
+        "Dashed line = Pub+1yr."
     )
     eligible_acrs = sorted(d["decay"][d["decay"]["analysis_eligible"]]["Acronym"].unique())
     pick = st.selectbox("Factor", eligible_acrs, index=eligible_acrs.index("Mom6m") if "Mom6m" in eligible_acrs else 0)
@@ -457,10 +437,8 @@ perfect"); 134/212 factors are unanimously labeled by all three models.
                       yaxis_title="decay_diff (annualized Sharpe)")
     st.plotly_chart(fig, use_container_width=True)
     st.caption(
-        "Hover any point to see the factor name (Acronym + publication Year), "
-        "IS Sharpe, post-pub Sharpe, and decay_diff. Box shows median + IQR; "
-        "individual points are factors. Behavioral factors (red) center clearly "
-        "lower than the other two."
+        "Hover any point for Acronym, Year, IS / post Sharpe, decay_diff. "
+        "Behavioral box (red) clearly centers lower."
     )
 
     st.subheader("Long / short leg decomposition (mean per mechanism)")
@@ -500,11 +478,8 @@ perfect"); 134/212 factors are unanimously labeled by all three models.
                                        if c not in ["mechanism", "n"]}),
                  hide_index=True, use_container_width=True)
     st.caption(
-        "Reading: long legs deliver +0.45 to +0.53 mean post-pub Sharpe across all "
-        "mechanisms (alpha survives long-only). Short legs (when shorted) deliver "
-        "-0.45 to -0.50 — consistent with the EMP-2024 mechanism story that "
-        "post-pub fade is a short-side phenomenon, plausibly because short-sale "
-        "constraints prevent arbitrage on the broken-side mispricing."
+        "Long legs deliver +0.45 to +0.53 (alpha survives long-only); short legs "
+        "deliver -0.45 to -0.50 — post-pub fade is a short-side phenomenon."
     )
 
     st.subheader("Decade-level breakdown -- mean annual Sharpe by years_since_pub bin x mechanism")
@@ -533,12 +508,9 @@ perfect"); 134/212 factors are unanimously labeled by all three models.
         hide_index=True, use_container_width=True,
     )
     st.caption(
-        "Across all three mechanisms, post-pub years 0-10 sustain Sharpe ~0.4-0.6; "
-        "the long-horizon average is dragged down by the 20-30y / 30+y tail "
-        "(reversion regimes, rebalance cost compounding, microcap delisting bias). "
-        "This is the structural reason the 'long-horizon Sharpe ≥ 0.30' rate (46%) "
-        "is much lower than the 'positive in majority of years' rate (79%) shown "
-        "on the Overview page."
+        "Years 0-10 sustain Sharpe ~0.4-0.6; the 20-30y / 30+y tail drags long-"
+        "horizon averages down. This is why long-horizon ≥0.30 (46%) << positive-"
+        "in-majority (79%)."
     )
 
     st.subheader("OOS post-2020 cohort vs full post-pub")
@@ -571,13 +543,9 @@ perfect"); 134/212 factors are unanimously labeled by all three models.
                                        if c not in ["mechanism", "n"]}),
                  hide_index=True, use_container_width=True)
     st.caption(
-        "Honest finding: the **behavioral - risk-premium gap** that is statistically "
-        "significant in the full post-pub window (Welch p = 0.003) "
-        "**COMPRESSES TO INSIGNIFICANCE** in the 2020-2024 OOS cohort (p = 0.45). "
-        "Possible drivers (not separated by this project): factor crowding after "
-        "EMP-2024-style results became known; structural regime changes around "
-        "COVID-19 + 2022 inflation cycle; smaller sample (24-60 months per factor) "
-        "reducing statistical power."
+        "Honest OOS finding: behavioral-vs-risk-premium gap compresses from p=0.003 "
+        "(full post-pub) to p=0.45 (2020-2024). Drivers not separated here: post-EMP "
+        "crowding, COVID/2022 regime, or sample-size attenuation."
     )
 
 
@@ -627,13 +595,6 @@ AUM**: v1 estimates 132 bps/yr cost, v2 estimates 841 bps/yr (6.4×).
 """
         )
 
-    st.markdown(
-        "**Quick reference**:  \n"
-        "**v1 (Day 4-5)**: single universe ADV, signal-agnostic 50%/month turnover, "
-        "linear impact, no borrow.  \n"
-        "**v2 (Day 6 upgrade)**: per-factor turnover, cap-tier ADV, sqrt-linear hybrid "
-        "impact, tier-conditional borrow cost on the short leg."
-    )
 
     c1, c2 = st.columns(2)
     cap_v1 = d["cap_v1"][d["cap_v1"]["analysis_eligible"]]
@@ -656,13 +617,9 @@ AUM**: v1 estimates 132 bps/yr cost, v2 estimates 841 bps/yr (6.4×).
     fig.update_layout(yaxis_tickformat=".0%", height=350)
     st.plotly_chart(fig, use_container_width=True)
     st.caption(
-        "v2 (HF-grade) wipes out roughly 80% of v1's apparent viability. The gap is "
-        "almost entirely driven by (a) borrow cost (~10pp at $100M, ~3pp at $10B), "
-        "(b) per-factor turnover for momentum-style factors (which trade 6× more "
-        "than v1's flat 50%/month assumption), and (c) sqrt impact at very high AUM. "
-        "At $100B, only 1 of 208 factors clears the 0.30 threshold under either model "
-        "— at that scale, capacity is the binding constraint regardless of cost-model "
-        "choice."
+        "v2 wipes out ~80% of v1's apparent viability. Drivers: borrow (~10pp at "
+        "$100M), per-factor turnover (momentum trades 6× v1's flat assumption), "
+        "sqrt impact at very high AUM."
     )
 
     st.subheader("Cost breakdown by AUM (v2)")
