@@ -47,6 +47,8 @@ def load_all() -> dict[str, pd.DataFrame]:
         "oos": pd.read_parquet(base / "results" / "day6" / "oos_decay.parquet"),
         "dsr": pd.read_parquet(base / "results" / "day6" / "dsr.parquet"),
         "fdr": pd.read_parquet(base / "results" / "day6" / "fdr.parquet"),
+        "rolling": pd.read_parquet(base / "results" / "day6" / "rolling_viability.parquet"),
+        "decade": pd.read_parquet(base / "results" / "day6" / "decade_breakdown.parquet"),
     }
     out["ls"]["date"] = pd.to_datetime(out["ls"]["date"])
     out["wf"]["year"] = out["wf"]["year"].astype(int)
@@ -75,15 +77,39 @@ def page_overview(d: dict[str, pd.DataFrame]) -> None:
     decay = d["decay"][d["decay"]["analysis_eligible"]]
     cap = d["cap_v2"][d["cap_v2"]["analysis_eligible"]]
     dsr = d["dsr"]
+    rolling = d["rolling"].merge(decay[["Acronym"]], on="Acronym", how="inner")  # eligible only
 
     c1, c2, c3, c4, c5 = st.columns(5)
-    c1.metric("Factors", f"{decay['Acronym'].nunique()}")
+    c1.metric("Eligible factors", f"{decay['Acronym'].nunique()}")
     c2.metric("Mean post-pub Sharpe", f"{decay['post_sharpe'].mean():.3f}")
     c3.metric("Mean decay (post - IS)", f"{decay['decay_diff'].mean():.3f}")
-    c4.metric("DSR-robust (>=0.95)", f"{int(dsr['robust_at_05'].sum())}/{len(dsr)}")
+    c4.metric("DSR-robust (>=0.95)", f"{int(dsr['robust_at_05'].sum())}/{len(dsr)}",
+              help="DSR is computed on the IS Sharpe vs the multi-test Bailey-Lopez de Prado threshold; denominator is full universe (212), since DSR doesn't depend on post-pub eligibility.")
     cap_100m = cap[cap["aum_usd"] == 1e8]
     c5.metric("Viable @ $100M (v2)",
-              f"{int((cap_100m['capacity_sharpe'] >= 0.30).sum())}/{cap_100m['Acronym'].nunique()}")
+              f"{int((cap_100m['capacity_sharpe'] >= 0.30).sum())}/{cap_100m['Acronym'].nunique()}",
+              help="Capacity-adjusted Sharpe >= 0.30 with HF-grade v2 cost model (per-factor turnover + tier ADV + sqrt impact + borrow).")
+
+    st.markdown(
+        "**Long-horizon vs rolling viability** -- the headline `Mean post-pub Sharpe` and "
+        "`Viable @ $100M` use the FULL post-pub window (5 to 30+ years). A factor with "
+        "10 strong years and 20 weak ones can show low long-horizon Sharpe while still "
+        "delivering positive Sharpe in most years. The metrics below show the rolling view:"
+    )
+    n_elig = len(rolling)
+    long_horizon_viable = (decay["post_sharpe"] >= 0.30).sum()
+    pos_majority = (rolling["frac_positive"] >= 0.50).sum()
+    above_03_majority = (rolling["frac_above_03"] >= 0.50).sum()
+    r1, r2, r3 = st.columns(3)
+    r1.metric("Long-horizon post-pub Sharpe >= 0.30",
+              f"{long_horizon_viable}/{n_elig} ({long_horizon_viable/n_elig:.0%})",
+              help="Single Sharpe over the full post-pub window. This is what 'Mean post-pub Sharpe' summarises.")
+    r2.metric("Annual Sharpe positive in >=50% of post-pub years",
+              f"{pos_majority}/{n_elig} ({pos_majority/n_elig:.0%})",
+              help="Counts a factor as 'still working' if it had positive annual Sharpe in the majority of post-pub calendar years.")
+    r3.metric("Annual Sharpe >=0.30 in >=50% of post-pub years",
+              f"{above_03_majority}/{n_elig} ({above_03_majority/n_elig:.0%})",
+              help="Stricter: majority of post-pub years above the 0.30 viability threshold.")
 
     st.subheader("Survival curve (capacity-adjusted Sharpe >= 0.30)")
     sc = (
@@ -240,6 +266,26 @@ def page_mechanism(d: dict[str, pd.DataFrame]) -> None:
         "post-publication). Consistent with Engelberg-McLean-Pontiff 2024."
     )
 
+    st.subheader("Decade-level breakdown -- mean annual Sharpe by years_since_pub bin x mechanism")
+    decade = d["decade"].copy()
+    decade["decade_bin"] = decade["decade_bin"].astype(str)
+    decade_pivot = decade.pivot_table(
+        index="decade_bin", columns="mechanism", values="mean", aggfunc="first"
+    ).reindex(["0-5y", "5-10y", "10-15y", "15-20y", "20-30y", "30+y"]).reset_index()
+    st.dataframe(
+        decade_pivot.style.format(
+            {c: "{:.3f}" for c in decade_pivot.columns if c != "decade_bin"}
+        ),
+        hide_index=True, use_container_width=True,
+    )
+    st.caption(
+        "Across all three mechanisms, post-pub years 0-10 sustain Sharpe ~0.4-0.6; "
+        "the long-horizon average is dragged down by the 20-30y / 30+y tail "
+        "(reversion regimes, rebalance cost compounding, microcap delisting bias). "
+        "This explains why the headline 'long-horizon viable' rate (46%) is much lower "
+        "than the rolling 'positive in majority of years' rate (79%)."
+    )
+
     st.subheader("OOS post-2020 cohort vs full post-pub")
     oos = d["oos"]
     oos_sum = (oos.dropna(subset=["mechanism"]).groupby("mechanism")
@@ -366,6 +412,32 @@ finding it reproduces was previously published by **Engelberg-McLean-Pontiff
   publication dates; OAP gives only year, so this is a coarser proxy.
 - Eligibility: IS >= 36 months, post-pub >= 60 months. 4 of 212 excluded.
 - LS-level decay only at first; **leg-level decomposition added in v2** (Day 6).
+
+### Long-horizon vs rolling Sharpe -- IMPORTANT framing caveat
+
+The headline `Mean post-pub Sharpe` and `Viable @ $100M` numbers use a SINGLE
+Sharpe computed over the full post-pub window (5 to 30+ years). This long-
+horizon metric averages over good and bad regimes, and a factor with 10 strong
+years followed by 20 weak ones will show low long-horizon Sharpe while having
+delivered positive Sharpe in most years.
+
+Concrete numbers for the 208 eligible factors:
+
+  - Long-horizon post-pub Sharpe >= 0.30 viable    : **46%** (95/208)
+  - Annual Sharpe positive in >=50% of post years : **79%** (164/208)
+  - Annual Sharpe >= 0.30 in >=50% of post years   : **59%** (122/208)
+
+The 33-percentage-point gap between "long-horizon viable" and "positive in
+majority of years" is real and material -- 71 of the 113 factors flagged
+"decayed" (long-horizon < 0.30) actually had positive Sharpe in MOST post-pub
+years. Examples: `DivInit` (long-horizon 0.25, median annual 0.67),
+`EarningsForecastDisparity` (long-horizon 0.20, median annual 0.96).
+
+When using the dashboard:
+  - "still works in most years" -> use the rolling metric (Overview page).
+  - "deployable as a single long-horizon strategy" -> use the long-horizon
+    metric (post_sharpe column).
+  - The two are NOT equivalent.
 
 ### Capacity model (v2)
 
