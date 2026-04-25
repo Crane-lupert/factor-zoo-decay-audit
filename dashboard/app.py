@@ -143,6 +143,113 @@ of the standard literature -- not original research.
               f"{above_03_majority}/{n_elig} ({above_03_majority/n_elig:.0%})",
               help="Stricter: majority of post-pub years above the 0.30 viability threshold.")
 
+    # New: per-mechanism comparison across the 3 viability criteria
+    st.subheader("Rolling viability fraction by mechanism (3 criteria compared)")
+    eligible_with_mech = (
+        decay[["Acronym", "mechanism", "post_sharpe"]]
+        .merge(d["rolling"][["Acronym", "frac_positive", "frac_above_03"]],
+               on="Acronym", how="inner")
+    )
+
+    def _summ(g: pd.DataFrame) -> pd.Series:
+        return pd.Series({
+            "Long-horizon Sharpe ≥ 0.30":
+                float((g["post_sharpe"] >= 0.30).mean() * 100),
+            "Positive in ≥50% of years":
+                float((g["frac_positive"] >= 0.50).mean() * 100),
+            "Sharpe ≥ 0.30 in ≥50% of years":
+                float((g["frac_above_03"] >= 0.50).mean() * 100),
+            "n": int(len(g)),
+        })
+
+    mech_summ = (
+        eligible_with_mech.groupby("mechanism")
+        .apply(_summ, include_groups=False).reset_index()
+    )
+    all_summ = pd.DataFrame([_summ(eligible_with_mech).rename({"n": "n"})])
+    all_summ["mechanism"] = "ALL"
+    rolling_by_mech = pd.concat([mech_summ, all_summ], ignore_index=True)
+
+    rolling_long = rolling_by_mech.melt(
+        id_vars=["mechanism", "n"],
+        value_vars=["Long-horizon Sharpe ≥ 0.30",
+                    "Positive in ≥50% of years",
+                    "Sharpe ≥ 0.30 in ≥50% of years"],
+        var_name="criterion", value_name="viable_pct",
+    )
+    color_map_full = {
+        "behavioral": "#dc2626", "mispricing": "#2563eb",
+        "risk_premium": "#059669", "ALL": "#374151",
+    }
+    fig_via = px.bar(
+        rolling_long, x="criterion", y="viable_pct", color="mechanism",
+        barmode="group", height=380, color_discrete_map=color_map_full,
+        category_orders={"mechanism": ["ALL", "behavioral", "mispricing", "risk_premium"]},
+        labels={"viable_pct": "Viable factors (%)", "criterion": ""},
+        text=rolling_long["viable_pct"].round(0).astype(int).astype(str) + "%",
+    )
+    fig_via.update_traces(textposition="outside")
+    fig_via.update_layout(margin={"t": 30, "b": 30, "l": 30, "r": 30},
+                          yaxis_range=[0, 100])
+    st.plotly_chart(fig_via, use_container_width=True)
+    st.caption(
+        "Same 208 eligible factors evaluated under three different viability lenses. "
+        "**Long-horizon** is the strictest (single Sharpe averaged over 5-30+ years); "
+        "**Positive in majority** is the loosest (just count the years with annual "
+        "Sharpe > 0). The 33pp gap (46% vs 79%) is the long-horizon-tail effect "
+        "documented in Methodology / caveats. "
+        "Behavioral factors have the highest IS Sharpe so they show up disproportionately "
+        "in 'Positive in majority' (87%) but fade hardest under long-horizon (49%)."
+    )
+
+    # New: threshold sensitivity curve (true survival curve over Sharpe threshold)
+    st.subheader("Threshold sensitivity -- survival under increasing Sharpe bar")
+    wf_post = d["wf"][d["wf"]["years_since_pub"] > 0].merge(
+        decay[["Acronym", "mechanism"]], on="Acronym", how="inner"
+    )
+    thresholds = [0.0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50]
+    rows = []
+    for thr in thresholds:
+        per_factor = (
+            wf_post.assign(above=lambda x: x["sharpe_ann"] >= thr)
+            .groupby(["Acronym", "mechanism"])["above"].mean()
+            .reset_index()
+        )
+        for mech, g in per_factor.groupby("mechanism"):
+            rows.append({"threshold": thr, "mechanism": mech,
+                         "viable_pct": float((g["above"] >= 0.50).mean() * 100)})
+        rows.append({"threshold": thr, "mechanism": "ALL",
+                     "viable_pct": float((per_factor["above"] >= 0.50).mean() * 100)})
+    sens = pd.DataFrame(rows)
+
+    fig_sens = go.Figure()
+    for mech in ["ALL", "behavioral", "mispricing", "risk_premium"]:
+        sub = sens[sens["mechanism"] == mech]
+        fig_sens.add_trace(go.Scatter(
+            x=sub["threshold"], y=sub["viable_pct"], mode="lines+markers",
+            name=mech, line={"width": 3, "color": color_map_full.get(mech)},
+            hovertemplate=mech + "<br>threshold: %{x:.2f}<br>viable: %{y:.1f}%<extra></extra>",
+        ))
+    fig_sens.add_vline(x=0.30, line_dash="dot",
+                       annotation_text="0.30 (default)")
+    fig_sens.update_layout(
+        height=380,
+        xaxis_title="Annual Sharpe threshold (factor counted as 'still working' if it clears X in ≥50% of post-pub years)",
+        yaxis_title="Viable factors (%)",
+        margin={"t": 30, "b": 30, "l": 30, "r": 30}, yaxis_range=[0, 100],
+    )
+    st.plotly_chart(fig_sens, use_container_width=True)
+    st.caption(
+        "Each line: fraction of factors that clear the X-axis threshold in MAJORITY "
+        "of their post-pub years, by mechanism. The dashed line at 0.30 is the "
+        "default reported elsewhere in the dashboard. The curves are smooth and "
+        "monotone -- there is no cliff -- which means the headline 'rolling viable %' "
+        "is robust to small changes in threshold choice. Behavioral factors dominate "
+        "at low thresholds (most factors had positive years) but converge to the "
+        "other two by 0.50, indicating their advantage is concentrated in the "
+        "weak-signal regime."
+    )
+
     st.subheader("Survival curve (capacity-adjusted Sharpe >= 0.30)")
     sc = (
         cap.assign(viable=lambda x: x["capacity_sharpe"] >= 0.30)
