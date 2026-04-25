@@ -57,6 +57,11 @@ def fmt_aum(a: float) -> str:
     return f"${a/1e9:.0f}B" if a >= 1e9 else f"${a/1e6:.0f}M"
 
 
+# Display order for AUM scenarios; aum_label is a string so we must enforce
+# numeric order explicitly (otherwise pandas/plotly alphasort gives 100B<100M<10B<1B).
+AUM_ORDER = ["$100M", "$1B", "$10B", "$100B"]
+
+
 # ---------- pages ----------
 
 def page_overview(d: dict[str, pd.DataFrame]) -> None:
@@ -89,8 +94,14 @@ def page_overview(d: dict[str, pd.DataFrame]) -> None:
     )
     sc["aum_label"] = sc["aum_usd"].map(fmt_aum)
     sc["viable_pct"] = sc["n_viable"] / sc["n"]
-    pivot = sc.pivot(index="aum_label", columns="mechanism", values="viable_pct").reset_index()
-    pivot = pivot[["aum_label"] + sorted([c for c in pivot.columns if c != "aum_label"])]
+    # Pivot by numeric aum_usd to preserve order, then map labels
+    pivot = (
+        sc.pivot(index="aum_usd", columns="mechanism", values="viable_pct")
+        .sort_index()
+        .reset_index()
+    )
+    pivot["aum_label"] = pivot["aum_usd"].map(fmt_aum)
+    pivot = pivot[["aum_label"] + sorted([c for c in pivot.columns if c not in ("aum_usd", "aum_label")])]
 
     fig = go.Figure()
     for mech in [c for c in pivot.columns if c != "aum_label"]:
@@ -174,9 +185,9 @@ def page_per_factor(d: dict[str, pd.DataFrame]) -> None:
                      hide_index=True, use_container_width=True)
 
     st.subheader("Capacity-adjusted Sharpe by AUM (v2: per-factor turnover + tier ADV + sqrt impact + borrow)")
-    cap_v2 = d["cap_v2"][d["cap_v2"]["Acronym"] == pick].copy()
+    cap_v2 = d["cap_v2"][d["cap_v2"]["Acronym"] == pick].sort_values("aum_usd").copy()
     cap_v2["aum_label"] = cap_v2["aum_usd"].map(fmt_aum)
-    cap_v1 = d["cap_v1"][d["cap_v1"]["Acronym"] == pick].copy()
+    cap_v1 = d["cap_v1"][d["cap_v1"]["Acronym"] == pick].sort_values("aum_usd").copy()
     cap_v1["aum_label"] = cap_v1["aum_usd"].map(fmt_aum)
     if not cap_v2.empty:
         fig3 = go.Figure()
@@ -187,6 +198,7 @@ def page_per_factor(d: dict[str, pd.DataFrame]) -> None:
                                   name="v1 (academic)", marker_color="#94a3b8"))
         fig3.add_hline(y=0.30, line_dash="dash", annotation_text="0.30 viability")
         fig3.update_layout(height=300, barmode="group",
+                           xaxis={"categoryorder": "array", "categoryarray": AUM_ORDER},
                            margin={"t": 30, "b": 30, "l": 30, "r": 30})
         st.plotly_chart(fig3, use_container_width=True)
         if not cap_v2.empty:
@@ -272,11 +284,12 @@ def page_capacity(d: dict[str, pd.DataFrame]) -> None:
                      })).reset_index())
     sv1 = sc(cap_v1); sv2 = sc(cap_v2)
     sv1["model"] = "v1 (academic)"; sv2["model"] = "v2 (HF-grade)"
-    both = pd.concat([sv1, sv2])
+    both = pd.concat([sv1, sv2]).sort_values("aum_usd")
     both["aum_label"] = both["aum_usd"].map(fmt_aum)
 
     fig = px.bar(both, x="aum_label", y="viable_pct", color="model", barmode="group",
-                 labels={"viable_pct": "Viable %", "aum_label": "AUM"})
+                 labels={"viable_pct": "Viable %", "aum_label": "AUM"},
+                 category_orders={"aum_label": AUM_ORDER})
     fig.update_layout(yaxis_tickformat=".0%", height=350)
     st.plotly_chart(fig, use_container_width=True)
 
@@ -285,7 +298,8 @@ def page_capacity(d: dict[str, pd.DataFrame]) -> None:
                     .agg(mean_trading_bps=("annual_trading_bps", "mean"),
                          mean_borrow_bps=("annual_borrow_bps", "mean"),
                          mean_total_bps=("annual_total_cost_bps", "mean"))
-                    .reset_index())
+                    .reset_index()
+                    .sort_values("aum_usd"))
     cost_summary["aum_label"] = cost_summary["aum_usd"].map(fmt_aum)
     st.dataframe(cost_summary[["aum_label", "mean_trading_bps", "mean_borrow_bps", "mean_total_bps"]]
                  .style.format({c: "{:.0f}" for c in cost_summary.columns
