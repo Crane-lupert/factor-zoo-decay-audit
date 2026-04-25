@@ -1,0 +1,19 @@
+Day-1 sanity check (Chen-Zimmermann reproduction)
+==================================================
+Signals in metadata doc                  : 212
+Signals with LS portfolio returns        : 212
+Signals with computable IS Sharpe + doc T: 188
+Comparable subset (raw LS / port-sort)   : 76
+
+Comparable-subset Sharpe |rel_err| distribution:
+  within +/-   5%:  17/76 (22.4%)
+  within +/-  10%:  32/76 (42.1%)
+  within +/-  20%:  55/76 (72.4%)
+  within +/-  30%:  65/76 (85.5%)
+  median |rel_err| : 0.1259
+  mean   |rel_err| : 0.1652
+  sign agreement   : 98.7%
+
+Gate: >=75% within +/-20% AND median <= 20%: FAIL
+
+Note: doc Return/T-Stat use heterogeneous tests (port sort, FF3 alpha, regression coefficients, event studies). Strict +/-5% Sharpe agreement is structurally unreachable -- even on the comparable subset, OAP's reproduction diverges by ~10-20% per signal due to leg-construction (decile vs quintile, NYSE breakpoints, data-lag) differences from the original papers.
