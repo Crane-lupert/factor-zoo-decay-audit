@@ -1,0 +1,35 @@
+Day-4/5 capacity-adjusted survival curve
+=========================================
+factors eligible: 208/212
+
+Annual cost (bps) by AUM:
+  $100M  : 121 bps/yr
+  $1B    : 132 bps/yr
+  $10B   : 240 bps/yr
+  $100B  : 1320 bps/yr
+
+Survival threshold: capacity_sharpe >= 0.3
+
+Viable counts:
+mechanism  ALL  behavioral  mispricing  risk_premium
+$100M       66          20          31            15
+$1B         63          18          30            15
+$10B        45          11          21            13
+$100B        1           0           1             0
+
+Viable %:
+mechanism   ALL  behavioral  mispricing  risk_premium
+$100M      31.7        35.1        37.8          21.7
+$1B        30.3        31.6        36.6          21.7
+$10B       21.6        19.3        25.6          18.8
+$100B       0.5         0.0         1.2           0.0
+
+Sensitivity (overall viable_pct):
+               $100M   $1B  $10B  $100B
+perturbation                           
+base            31.7  30.3  21.6    0.5
+kappa_half      32.2  30.8  26.9    4.3
+kappa_x2        31.2  29.8  16.8    0.5
+turnover_half   32.2  30.8  26.9    4.3
+turnover_x2     31.2  29.8  16.8    0.5
+universe_half   31.2  29.8  16.8    0.5
