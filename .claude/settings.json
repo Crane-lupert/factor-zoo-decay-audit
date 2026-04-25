@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "_note": "Project Factor (Zoo Decay + Capacity). shared-utils + openassetpricing 사용. Chen-Zimmermann 재현 전용.",
+  "permissions": {
+    "allow": [
+      "Read",
+      "Glob",
+      "Grep",
+      "Bash",
+      "Edit(./**)",
+      "Write(./**)",
+      "WebSearch",
+      "WebFetch",
+
+      "Bash(mkdir -p ./:*)",
+      "Bash(mkdir ./:*)",
+      "Bash(touch ./:*)",
+      "Bash(cp:./**)",
+      "Bash(mv:./**)",
+
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(echo:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+
+      "Bash(uv:*)",
+      "Bash(python:*)",
+      "Bash(pip:*)",
+      "Bash(pytest:*)",
+      "Bash(ruff:*)",
+      "Bash(jupyter:*)",
+
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)",
+      "Bash(git commit:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+
+      "Task",
+      "TodoWrite"
+    ],
+    "deny": [
+      "Bash(rm:*)",
+      "Bash(rmdir:*)",
+      "Bash(del:*)",
+      "Bash(unlink:*)",
+      "Bash(shred:*)",
+      "Bash(dd:*)",
+      "Bash(mkfs:*)",
+
+      "Bash(git clean:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git branch -D:*)",
+
+      "Edit(D:/vscode/portfolio-coordination/**)",
+      "Write(D:/vscode/portfolio-coordination/**)",
+      "Edit(D:/vscode/sec-comment-letter-alpha/**)",
+      "Write(D:/vscode/sec-comment-letter-alpha/**)",
+      "Edit(D:/vscode/activist-intent-llm/**)",
+      "Write(D:/vscode/activist-intent-llm/**)",
+      "Edit(D:/vscode/sin-controversy-pilot/**)",
+      "Write(D:/vscode/sin-controversy-pilot/**)",
+
+      "Edit(./.env)",
+      "Write(./.env)"
+    ]
+  }
+}
