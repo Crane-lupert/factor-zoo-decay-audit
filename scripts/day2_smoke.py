@@ -13,10 +13,12 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
+import os  # noqa: E402
+
 from dotenv import load_dotenv  # noqa: E402
 
 # load coord-level .env (has OPENROUTER_API_KEY)
-load_dotenv(Path("D:/vscode/portfolio-coordination/.env"))
+load_dotenv(Path(os.environ.get("PORTFOLIO_COORD_ROOT", "D:/vscode/portfolio-coordination")) / ".env")
 
 from shared_utils.openrouter_client import OpenRouterClient  # noqa: E402
 
